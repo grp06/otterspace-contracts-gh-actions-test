@@ -14,6 +14,7 @@ jobs:
       GOERLI_BADGES_ADDRESS: ${{ secrets.GOERLI_BADGES_ADDRESS }}
       GOERLI_RAFT_ADDRESS: ${{ secrets.GOERLI_RAFT_ADDRESS }}
       GOERLI_SPECDATAHOLDER_ADDRESS: ${{ secrets.GOERLI_SPECDATAHOLDER_ADDRESS }}
+      GOERLI_GNOSIS_SAFE: ${{ secrets.GOERLI_GNOSIS_SAFE }}
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
@@ -62,6 +63,15 @@ jobs:
           current_badges=$(cat src/Badges.sol)
           current_raft=$(cat src/Raft.sol)
           current_sdh=$(cat src/SpecDataHolder.sol)
+          echo "GOERLI_RPC_URL = $GOERLI_RPC_URL"
+          echo "ETHERSCAN_API_KEY = $ETHERSCAN_API_KEY"
+          echo "DEFENDER_TEAM_API_KEY = $DEFENDER_TEAM_API_KEY"
+          echo "DEFENDER_TEAM_API_SECRET_KEY = $DEFENDER_TEAM_API_SECRET_KEY"
+          echo "GOERLI_BADGES_ADDRESS = $GOERLI_BADGES_ADDRESS"
+          echo "GOERLI_RAFT_ADDRESS = $GOERLI_RAFT_ADDRESS"
+          echo "GOERLI_SPECDATAHOLDER_ADDRESS = $GOERLI_SPECDATAHOLDER_ADDRESS"
+          echo "GOERLI_GNOSIS_SAFE = $GOERLI_GNOSIS_SAFE"
+
 
           # Compare the contents of src/Badges.sol between the latest tag and the current commit
           if [ "$last_tag_badges" != "$current_badges" ]; then
