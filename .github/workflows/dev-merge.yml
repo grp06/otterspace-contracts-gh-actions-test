@@ -11,6 +11,9 @@ jobs:
       ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
       DEFENDER_TEAM_API_KEY: ${{ secrets.DEFENDER_TEAM_API_KEY }}
       DEFENDER_TEAM_API_SECRET_KEY: ${{ secrets.DEFENDER_TEAM_API_SECRET_KEY }}
+      GOERLI_BADGES_ADDRESS: ${{ secrets.GOERLI_BADGES_ADDRESS }}
+      GOERLI_RAFT_ADDRESS: ${{ secrets.GOERLI_RAFT_ADDRESS }}
+      GOERLI_SPECDATAHOLDER_ADDRESS: ${{ secrets.GOERLI_SPECDATAHOLDER_ADDRESS }}
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
