@@ -39,6 +39,7 @@ async function createProposal() {
       contract.address = GOERLI_SPECDATAHOLDER_ADDRESS
       break
   }
+  console.log('contract.address = ', contract.address)
   await client.proposeUpgrade({ newImplementation }, contract)
 }
 createProposal()
