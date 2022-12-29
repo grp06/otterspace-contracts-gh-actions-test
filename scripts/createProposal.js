@@ -20,7 +20,6 @@ async function createProposal() {
     address: null,
   }
   const contractName = process.argv[3]
-  console.log('🚀 ~ createProposal ~ contractName', contractName)
   switch (contractName) {
     case 'badges':
       contract.address = GOERLI_BADGES_ADDRESS
@@ -32,7 +31,6 @@ async function createProposal() {
       contract.address = GOERLI_SPECDATAHOLDER_ADDRESS
       break
   }
-  const res = await client.proposeUpgrade({ newImplementation }, contract)
-  console.log('🚀 ~ createProposal ~ res', res)
+  await client.proposeUpgrade({ newImplementation }, contract)
 }
 createProposal()
