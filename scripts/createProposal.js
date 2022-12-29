@@ -10,11 +10,18 @@ const {
 } = process.env
 
 async function createProposal() {
+  console.log(
+    '🚀 ~ GOERLI_SPECDATAHOLDER_ADDRESS',
+    GOERLI_SPECDATAHOLDER_ADDRESS
+  )
+  console.log('🚀 ~ GOERLI_RAFT_ADDRESS', GOERLI_RAFT_ADDRESS)
+  console.log('🚀 ~ GOERLI_BADGES_ADDRESS', GOERLI_BADGES_ADDRESS)
   const client = new AdminClient({
     apiKey: DEFENDER_TEAM_API_KEY,
     apiSecret: DEFENDER_TEAM_API_SECRET_KEY,
   })
   const newImplementation = process.argv[2]
+  console.log('🚀 ~ createProposal ~ newImplementation', newImplementation)
   const contract = {
     network: 'goerli',
     address: null,
@@ -32,7 +39,6 @@ async function createProposal() {
       contract.address = GOERLI_SPECDATAHOLDER_ADDRESS
       break
   }
-  const res = await client.proposeUpgrade({ newImplementation }, contract)
-  console.log('🚀 ~ createProposal ~ res', res)
+  await client.proposeUpgrade({ newImplementation }, contract)
 }
 createProposal()
