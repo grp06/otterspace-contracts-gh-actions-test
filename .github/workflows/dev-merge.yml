@@ -37,17 +37,6 @@ jobs:
       - name: Run forge install
         run: forge install
 
-      # I don't think we need this if we're not using hardhat here
-      # - name: Compile hardhat
-      #   env:
-      #     CI: true
-      #     DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-      #     ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
-      #     DEFENDER_TEAM_API_KEY: ${{ secrets.DEFENDER_TEAM_API_KEY }}
-      #     DEFENDER_TEAM_API_SECRET_KEY: ${{ secrets.DEFENDER_TEAM_API_SECRET_KEY }}
-      #   run: |
-      #     npx hardhat compile
-
       - run: |
           # Get the latest tag
           last_tag=$(git describe --tags --abbrev=0)
@@ -60,23 +49,50 @@ jobs:
 
           # Get the contents of src/Badges.sol from the latest tag
           last_tag_badges=$(cat src/Badges.sol)
+          last_tag_raft=$(cat src/Raft.sol)
+          last_tag_sdh=$(cat src/SpecDataHolder.sol)
 
           # Checkout the current commit
           git switch dev
 
           # Get the contents of src/Badges.sol from the current commit
           current_badges=$(cat src/Badges.sol)
+          current_raft=$(cat src/Raft.sol)
+          current_sdh=$(cat src/SpecDataHolder.sol)
 
           # Compare the contents of src/Badges.sol between the latest tag and the current commit
           if [ "$last_tag_badges" != "$current_badges" ]; then
-            echo "ECHO BEFORE FORGE CREATE RUNS"
-            implementation=$(forge create src/Badges.sol:Badges --private-key $DEPLOYER_PRIVATE_KEY --verify --rpc-url $GOERLI_RPC_URL --etherscan-api-key $ETHERSCAN_API_KEY | grep "Deployed to:" | cut -d " " -f 3)
-            echo "ECHO BEFORE SCRIPT RUNS"
-            echo "new implementation address is $implementation"
-            node scripts/createProposal.js $implementation
-            echo "ECHO AFTER SCRIPT RUNS"
+            ## deploy and verify 
+            # note: here we're getting the output of forge create and grabbing the address
+            badgesImplementation=$(forge create src/Badges.sol:Badges --private-key $DEPLOYER_PRIVATE_KEY --verify --rpc-url $GOERLI_RPC_URL --etherscan-api-key $ETHERSCAN_API_KEY | grep "Deployed to:" | cut -d " " -f 3)
+            # run our js file that creates the proposal
+            node scripts/createProposal.js $badgesImplementation
+            echo "BADGES: deployed implementation, verified, proposed"
+          else
+            echo "no changes in Badges between this commit and the last tagged version"
           fi
 
+          if [ "$last_tag_raft" != "$current_raft" ]; then
+            ## deploy and verify 
+            # note: here we're getting the output of forge create and grabbing the address
+            raftImplementation=$(forge create src/Raft.sol:Raft --private-key $DEPLOYER_PRIVATE_KEY --verify --rpc-url $GOERLI_RPC_URL --etherscan-api-key $ETHERSCAN_API_KEY | grep "Deployed to:" | cut -d " " -f 3)
+            # run our js file that creates the proposal
+            node scripts/createProposal.js $raftImplementation
+            echo "RAFT: deployed implementation, verified, proposed"
+          else
+            echo "no changes in Raft between this commit and the last tagged version"            
+          fi
+
+          if [ "$last_tag_sdh" != "$current_sdh" ]; then
+            ## deploy and verify 
+            # note: here we're getting the output of forge create and grabbing the address
+            sdhImplementation=$(forge create src/Badges.sol:Badges --private-key $DEPLOYER_PRIVATE_KEY --verify --rpc-url $GOERLI_RPC_URL --etherscan-api-key $ETHERSCAN_API_KEY | grep "Deployed to:" | cut -d " " -f 3)
+            # run our js file that creates the proposal
+            node scripts/createProposal.js $sdhImplementation
+            echo "SpecDataHolder: deployed implementation, verified, proposed"
+          else
+            echo "no changes in SpecDataHolder between this commit and the last tagged version"            
+          fi
       - run: |
           # Tag the current commit with the version specified in package.json
           version=$(grep '"version":' package.json | cut -d'"' -f4)

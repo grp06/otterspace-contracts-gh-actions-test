@@ -7,16 +7,11 @@ async function createProposal() {
     apiKey,
     apiSecret,
   })
-  console.log('🚀 ~ apiKey', apiKey)
-  console.log('🚀 ~ apiSecret', apiSecret)
   const newImplementation = process.argv[2]
-  console.log('🚀 ~ createProposal ~ newImplementation', newImplementation)
-  // const newImplementationAbi = '[...]'
   const contract = {
     network: 'goerli',
     address: newImplementation,
   }
   const res = await client.proposeUpgrade({ newImplementation }, contract)
-  console.log('🚀 ~ createProposal ~ res', res)
 }
 createProposal()
