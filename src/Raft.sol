@@ -48,7 +48,7 @@ contract Raft is
   }
 
   function getGeorge() public pure returns (string memory) {
-    return "1d3eeededdddsde333d";
+    return "george";
   }
 
   function mint(address recipient, string memory uri)
