@@ -5,6 +5,9 @@ const {
   GOERLI_BADGES_ADDRESS,
   GOERLI_RAFT_ADDRESS,
   GOERLI_SPECDATAHOLDER_ADDRESS,
+  OPTIMISM_BADGES_ADDRESS,
+  OPTIMISM_RAFT_ADDRESS,
+  OPTIMISM_SPECDATAHOLDER_ADDRESS,
   DEFENDER_TEAM_API_KEY,
   DEFENDER_TEAM_API_SECRET_KEY,
   GOERLI_GNOSIS_SAFE,
@@ -16,26 +19,42 @@ async function createProposal() {
     apiSecret: DEFENDER_TEAM_API_SECRET_KEY,
   })
   const newImplementation = process.argv[2]
-  console.log('🚀 ~ createProposal ~ newImplementation', newImplementation)
-  const contract = {
-    network: 'goerli',
-    address: null,
-  }
+
+  const contract = {}
   const contractName = process.argv[3]
+  const network = process.argv[4]
+
   switch (contractName) {
     case 'badges':
-      contract.address = GOERLI_BADGES_ADDRESS
+      if (network === 'goerli') {
+        contract.address = GOERLI_BADGES_ADDRESS
+        contract.network = 'goerli'
+      } else if (network === 'optimism') {
+        contract.address = OPTIMISM_BADGES_ADDRESS
+        contract.network = 'optimism'
+      }
       break
     case 'raft':
-      contract.address = GOERLI_RAFT_ADDRESS
+      if (network === 'goerli') {
+        contract.address = GOERLI_RAFT_ADDRESS
+        contract.network = 'goerli'
+      } else if (network === 'optimism') {
+        contract.address = OPTIMISM_RAFT_ADDRESS
+        contract.network = 'optimism'
+      }
       break
     case 'specDataHolder':
-      contract.address = GOERLI_SPECDATAHOLDER_ADDRESS
+      if (network === 'goerli') {
+        contract.address = GOERLI_SPECDATAHOLDER_ADDRESS
+        contract.network = 'goerli'
+      } else if (network === 'optimism') {
+        contract.address = OPTIMISM_SPECDATAHOLDER_ADDRESS
+        contract.network = 'optimism'
+      }
       break
   }
   const via = GOERLI_GNOSIS_SAFE
   const viaType = 'Gnosis Safe'
-  console.log('🚀 ~ createProposal ~ contract.address', contract.address)
   client.proposeUpgrade({ newImplementation, via, viaType }, contract)
 }
 createProposal()
