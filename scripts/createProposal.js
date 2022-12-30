@@ -34,6 +34,6 @@ async function createProposal() {
   }
   const via = GOERLI_GNOSIS_SAFE
   const viaType = 'Gnosis Safe'
-  client.proposeUpgrade({ newImplementation }, contract, { via, viaType })
+  client.proposeUpgrade({ newImplementation, via, viaType }, contract)
 }
 createProposal()
