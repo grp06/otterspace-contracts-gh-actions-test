@@ -72,6 +72,7 @@ jobs:
             # note: here we're getting the output of forge create and grabbing the address
             badgesImplementation=$(forge create src/Badges.sol:Badges --private-key $DEPLOYER_PRIVATE_KEY --verify --rpc-url $OPTIMISM_RPC_URL --etherscan-api-key $OPTIMISTIC_ETHERSCAN_API_KEY | grep "Deployed to:" | cut -d " " -f 3)
             # run our js file that creates the proposal
+            echo "badgesImplementation = $badgesImplementation"
             node scripts/createProposal.js $badgesImplementation 'badges' 'optimism'
             echo "BADGES: deployed implementation, verified, proposed"
           else
