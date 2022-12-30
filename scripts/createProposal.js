@@ -24,7 +24,9 @@ async function createProposal() {
 
   const contract = {}
   const contractName = process.argv[3]
+  console.log('🚀 ~ createProposal ~ contractName', contractName)
   const network = process.argv[4]
+  console.log('🚀 ~ createProposal ~ network', network)
 
   switch (contractName) {
     case 'badges':
