@@ -21,7 +21,7 @@ contract SpecDataHolder is
   address private raftAddress;
 
   function getGeorge() public pure returns (string memory) {
-    return "gp";
+    return "gpr";
   }
 
   modifier onlyBadgesContract() {
