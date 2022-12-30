@@ -11,6 +11,7 @@ const {
   DEFENDER_TEAM_API_KEY,
   DEFENDER_TEAM_API_SECRET_KEY,
   GOERLI_GNOSIS_SAFE,
+  OPTIMISM_GNOSIS_SAFE,
 } = process.env
 
 async function createProposal() {
@@ -53,7 +54,7 @@ async function createProposal() {
       }
       break
   }
-  const via = GOERLI_GNOSIS_SAFE
+  const via = network === 'goerli' ? GOERLI_GNOSIS_SAFE : OPTIMISM_GNOSIS_SAFE
   const viaType = 'Gnosis Safe'
   client.proposeUpgrade({ newImplementation, via, viaType }, contract)
 }
