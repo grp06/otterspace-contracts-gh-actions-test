@@ -1,7 +1,7 @@
 const { ethers, upgrades } = require('hardhat')
 require('dotenv').config()
 
-async function main() {
+async function main(isOptimism: boolean) {
   const {
     BADGES_NAME: badgesName,
     BADGES_SYMBOL: badgesSymbol,
@@ -9,16 +9,24 @@ async function main() {
     RAFT_NAME: raftName,
     RAFT_SYMBOL: raftSymbol,
     GOERLI_GNOSIS_SAFE: owner,
+    OPTIMISM_GNOSIS_SAFE: optimismOwner,
   } = process.env
 
-  console.log(`deploying raft contract with args - owner: ${owner}, raftName: ${raftName}, raftSymbol: ${raftSymbol}`)
-  const raftAddress = await deployRaftContract(owner, raftName, raftSymbol)
+  let contractOwner;
+  if (isOptimism) {
+    contractOwner = optimismOwner;
+  } else {
+    contractOwner = owner;
+  }  
+
+  console.log(`deploying raft contract with args - owner: ${contractOwner}, raftName: ${raftName}, raftSymbol: ${raftSymbol}`)
+  const raftAddress = await deployRaftContract(contractOwner, raftName, raftSymbol)
   console.log('raft contract deployed to ', raftAddress)
 
-  const sdhAddress = await deploySpecDataHolderContract(raftAddress, owner)
+  const sdhAddress = await deploySpecDataHolderContract(raftAddress, contractOwner)
   console.log('specDataHolder deployed to address = ', sdhAddress)
 
-  const badgesAddress = await deployBadgesContract(badgesName, badgesSymbol, badgesVersion, owner, sdhAddress)
+  const badgesAddress = await deployBadgesContract(badgesName, badgesSymbol, badgesVersion, contractOwner, sdhAddress)
   console.log('badges contract deployed to address = ', badgesAddress)
   
   // when SpecDataHolder is originally deployed, it doesn't have the address of the Badges contract
@@ -86,7 +94,7 @@ async function deployRaftContract(
   return raftContract.address
 }
 
-main()
+main(true)
   .then(() => process.exit(0))
   .catch(error => {
     console.error(error)
