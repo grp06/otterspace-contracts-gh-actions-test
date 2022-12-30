@@ -8,7 +8,7 @@ async function main() {
     BADGES_VERSION: badgesVersion,
     RAFT_NAME: raftName,
     RAFT_SYMBOL: raftSymbol,
-    GNOSIS_MULTISIG: owner,
+    GOERLI_GNOSIS_SAFE: owner,
   } = process.env
 
   console.log(`deploying raft contract with args - owner: ${owner}, raftName: ${raftName}, raftSymbol: ${raftSymbol}`)

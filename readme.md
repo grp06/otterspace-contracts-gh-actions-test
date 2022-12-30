@@ -104,7 +104,7 @@ On [Hardhat's website](https://hardhat.org) you will find:
 ## Deploying contracts for the first time
 
 - create a `.env` file matching the variables seen in `.env.example`
-- run `./scripts/deployProxy.ts .env`
+- run `npx hardhat run ./scripts/deployProxy.ts --network goerli`
 - Hardhat will deploy the SpecDataHolder, Raft, and Badges contracts, then deploy a proxy for each one.
 - Once deployed, follow the logged instructions in your terminal to verify the contracts.
 - it will tell you: `npx hardhat verify --network ${networkName} ${contractAddress}`

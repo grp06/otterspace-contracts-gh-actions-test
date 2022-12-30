@@ -16,6 +16,7 @@ async function createProposal() {
     apiSecret: DEFENDER_TEAM_API_SECRET_KEY,
   })
   const newImplementation = process.argv[2]
+  console.log('🚀 ~ createProposal ~ newImplementation', newImplementation)
   const contract = {
     network: 'goerli',
     address: null,
@@ -34,6 +35,7 @@ async function createProposal() {
   }
   const via = GOERLI_GNOSIS_SAFE
   const viaType = 'Gnosis Safe'
+  console.log('🚀 ~ createProposal ~ contract.address', contract.address)
   client.proposeUpgrade({ newImplementation, via, viaType }, contract)
 }
 createProposal()
