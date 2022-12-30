@@ -19,20 +19,20 @@ async function main(isOptimism: boolean) {
     contractOwner = owner;
   }  
 
-  console.log(`deploying raft contract with args - owner: ${contractOwner}, raftName: ${raftName}, raftSymbol: ${raftSymbol}`)
-  const raftAddress = await deployRaftContract(contractOwner, raftName, raftSymbol)
-  console.log('raft contract deployed to ', raftAddress)
+  // console.log(`deploying raft contract with args - owner: ${contractOwner}, raftName: ${raftName}, raftSymbol: ${raftSymbol}`)
+  // const raftAddress = await deployRaftContract(contractOwner, raftName, raftSymbol)
+  // console.log('raft contract deployed to ', raftAddress)
 
-  const sdhAddress = await deploySpecDataHolderContract(raftAddress, contractOwner)
+  const sdhAddress = await deploySpecDataHolderContract('0x78F8E56c3B6F66CE2cc0692a37EC86C5233b94e9', contractOwner)
   console.log('specDataHolder deployed to address = ', sdhAddress)
 
-  const badgesAddress = await deployBadgesContract(badgesName, badgesSymbol, badgesVersion, contractOwner, sdhAddress)
-  console.log('badges contract deployed to address = ', badgesAddress)
+  // const badgesAddress = await deployBadgesContract(badgesName, badgesSymbol, badgesVersion, contractOwner, sdhAddress)
+  // console.log('badges contract deployed to address = ', badgesAddress)
   
   // when SpecDataHolder is originally deployed, it doesn't have the address of the Badges contract
   // so after everything is deployed, we need to set the address so that Badges and SpecDataHolder 
   // can talk to each other
-  await sdhAddress.setBadgesContractAddress(badgesAddress);
+  // await sdhAddress.setBadgesContractAddress(badgesAddress);
   
   console.log('For verification, run `npx hardhat verify --network ${networkName} ${contractAddress}`')
 }
@@ -94,7 +94,7 @@ async function deployRaftContract(
   return raftContract.address
 }
 
-main(true)
+main(false)
   .then(() => process.exit(0))
   .catch(error => {
     console.error(error)
