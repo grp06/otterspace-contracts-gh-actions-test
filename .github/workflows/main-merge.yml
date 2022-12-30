@@ -72,7 +72,7 @@ jobs:
             # note: here we're getting the output of forge create and grabbing the address
             badgesImplementation=$(forge create src/Badges.sol:Badges --private-key $DEPLOYER_PRIVATE_KEY --verify --rpc-url $OPTIMISM_RPC_URL --etherscan-api-key $OPTIMISTIC_ETHERSCAN_API_KEY | grep "Deployed to:" | cut -d " " -f 3)
             # run our js file that creates the proposal
-            node scripts/createProposal.js $badgesImplementation 'badges'
+            node scripts/createProposal.js $badgesImplementation 'badges' 'optimism'
             echo "BADGES: deployed implementation, verified, proposed"
           else
             echo "no changes in Badges between this commit and the last tagged version"
@@ -83,7 +83,7 @@ jobs:
             # note: here we're getting the output of forge create and grabbing the address
             raftImplementation=$(forge create src/Raft.sol:Raft --private-key $DEPLOYER_PRIVATE_KEY --verify --rpc-url $OPTIMISM_RPC_URL --etherscan-api-key $OPTIMISTIC_ETHERSCAN_API_KEY | grep "Deployed to:" | cut -d " " -f 3)
             # run our js file that creates the proposal
-            node scripts/createProposal.js $raftImplementation 'raft'
+            node scripts/createProposal.js $raftImplementation 'raft' 'optimism'
             echo "RAFT: deployed implementation, verified, proposed"
           else
             echo "no changes in Raft between this commit and the last tagged version"            
@@ -94,7 +94,7 @@ jobs:
             # note: here we're getting the output of forge create and grabbing the address
             sdhImplementation=$(forge create src/Badges.sol:Badges --private-key $DEPLOYER_PRIVATE_KEY --verify --rpc-url $OPTIMISM_RPC_URL --etherscan-api-key $OPTIMISTIC_ETHERSCAN_API_KEY | grep "Deployed to:" | cut -d " " -f 3)
             # run our js file that creates the proposal
-            node scripts/createProposal.js $sdhImplementation 'specDataHolder'
+            node scripts/createProposal.js $sdhImplementation 'specDataHolder' 'optimism'
             echo "SpecDataHolder: deployed implementation, verified, proposed"
           else
             echo "no changes in SpecDataHolder between this commit and the last tagged version"            
