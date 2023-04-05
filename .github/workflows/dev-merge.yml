@@ -28,7 +28,7 @@ jobs:
       OPTIMISM_GOERLI_BADGES_ADDRESS: ${{ secrets.OPTIMISM_GOERLI_BADGES_ADDRESS }}
       OPTIMISM_GOERLI_RAFT_ADDRESS: ${{ secrets.OPTIMISM_GOERLI_RAFT_ADDRESS }}
       OPTIMISM_GOERLI_SPECDATAHOLDER_ADDRESS: ${{ secrets.OPTIMISM_GOERLI_SPECDATAHOLDER_ADDRESS }}
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
