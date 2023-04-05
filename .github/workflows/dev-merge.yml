@@ -1,7 +1,12 @@
+# on:
+#   pull_request:
+#     types:
+#       - closed
+#     branches:
+#       - dev
+
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - dev
 
@@ -68,16 +73,16 @@ jobs:
 
           declare -A networks=(
               ["goerli"]="$GOERLI_RPC_URL $ETHERSCAN_API_KEY"
-              ["optimism-goerli"]="$OPTIMISM_GOERLI_RPC_URL $OPTIMISTIC_ETHERSCAN_API_KEY"         
           )
 
           for name in "${!networks[@]}"; do
               read rpc_url etherscan_api_key <<<"${networks[$name]}"
               if [ "$last_tag_badges" != "$current_badges" ]; then
-                  badgesImplementation=$(forge create src/Badges.sol:Badges --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" --gas-limit 2000000 | grep "Deployed to:" | cut -d " " -f 3) || {
-                      echo "Failed to deploy the new Badges implementation on $name"
-                      exit 1
-                  }
+                  # badgesImplementation=$(forge create src/Badges.sol:Badges --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" --gas-limit 2000000 | grep "Deployed to:" | cut -d " " -f 3) || {
+                  #     echo "Failed to deploy the new Badges implementation on $name"
+                  #     exit 1
+                  # }
+                  badgesImplementation="0x1B9a8bf0cB399a065b8a864bE0954Ce3cE318ec4"     
 
                   node scripts/createProposal.js "$badgesImplementation" 'badges' "$name" || {
                       echo "Failed to create a proposal for the new Badges implementation on $name"
@@ -85,27 +90,27 @@ jobs:
                   }
               fi
 
-              if [ "$last_tag_raft" != "$current_raft" ]; then
-                  raftImplementation=$(forge create src/Raft.sol:Raft --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" --gas-limit 2000000 | grep "Deployed to:" | cut -d " " -f 3) || {
-                      echo "Failed to deploy the new Raft implementation on $name"
-                      exit 1
-                  }
-                  node scripts/createProposal.js "$raftImplementation" 'raft' "$name" || {
-                      echo "Failed to create a proposal for the new Raft implementation on $name"
-                      exit 1
-                  }
-              fi
+              # if [ "$last_tag_raft" != "$current_raft" ]; then
+              #     raftImplementation=$(forge create src/Raft.sol:Raft --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" --gas-limit 2000000 | grep "Deployed to:" | cut -d " " -f 3) || {
+              #         echo "Failed to deploy the new Raft implementation on $name"
+              #         exit 1
+              #     }
+              #     node scripts/createProposal.js "$raftImplementation" 'raft' "$name" || {
+              #         echo "Failed to create a proposal for the new Raft implementation on $name"
+              #         exit 1
+              #     }
+              # fi
 
-              if [ "$last_tag_sdh" != "$current_sdh" ]; then
-                  sdhImplementation=$(forge create src/SpecDataHolder.sol:SpecDataHolder --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" --gas-limit 2000000 | grep "Deployed to:" | cut -d " " -f 3) || {
-                      echo "Failed to deploy the new SpecDataHolder implementation on $name"
-                      exit 1
-                  }
-                  node scripts/createProposal.js "$sdhImplementation" 'specDataHolder' "$name" || {
-                      echo "Failed to create a proposal for the new SpecDataHolder implementation on $name"
-                      exit 1
-                  }
-              fi
+              # if [ "$last_tag_sdh" != "$current_sdh" ]; then
+              #     sdhImplementation=$(forge create src/SpecDataHolder.sol:SpecDataHolder --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" --gas-limit 2000000 | grep "Deployed to:" | cut -d " " -f 3) || {
+              #         echo "Failed to deploy the new SpecDataHolder implementation on $name"
+              #         exit 1
+              #     }
+              #     node scripts/createProposal.js "$sdhImplementation" 'specDataHolder' "$name" || {
+              #         echo "Failed to create a proposal for the new SpecDataHolder implementation on $name"
+              #         exit 1
+              #     }
+              # fi
 
               echo "All implementations deployed successfully on $name"
           done
