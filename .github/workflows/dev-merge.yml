@@ -29,7 +29,7 @@ jobs:
       OPTIMISM_GOERLI_RAFT_ADDRESS: ${{ secrets.OPTIMISM_GOERLI_RAFT_ADDRESS }}
       OPTIMISM_GOERLI_SPECDATAHOLDER_ADDRESS: ${{ secrets.OPTIMISM_GOERLI_SPECDATAHOLDER_ADDRESS }}
     if: github.event.pull_request.merged == false
-    runs-on: ubuntu-latest
+    runs-on: alpine-3.13
     steps:
       - uses: actions/checkout@v3
         with:
