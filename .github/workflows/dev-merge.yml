@@ -1,10 +1,8 @@
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - dev
-
+      
 jobs:
   deploy_to_testnets_on_merge:
     env:
@@ -56,19 +54,24 @@ jobs:
         run: |
           set -e
 
-          last_tag=$(git describe --tags --abbrev=0)
-          git branch last_tag_branch $last_tag
-          git switch last_tag_branch
+          # Get the name of the previous tag
+          prev_tag=$(git describe --tags --abbrev=0)
+          
+          # Create a new branch from the previous tag
+          git branch prev_tag $prev_tag
+          git switch prev_tag
 
-          badges_code_at_last_tag=$(cat src/Badges.sol)
-          raft_code_at_last_tag=$(cat src/Raft.sol)
-          sdh_code_at_last_tag=$(cat src/SpecDataHolder.sol)
+          # Get the code of the contracts at the previous tag
+          # and store it in a variable (it's just the file's content as a string)
+          badges_code_at_prev_tag=$(cat src/Badges.sol)
+          raft_code_at_prev_tag=$(cat src/Raft.sol)
+          sdh_code_at_prev_tag=$(cat src/SpecDataHolder.sol)
 
           git switch dev
 
-          current_badges_code=$(cat src/Badges.sol)
-          current_raft_code=$(cat src/Raft.sol)
-          current_sdh_code=$(cat src/SpecDataHolder.sol)
+          latest_badges_code=$(cat src/Badges.sol)
+          latest_raft_code=$(cat src/Raft.sol)
+          latest_sdh_code=$(cat src/SpecDataHolder.sol)
 
           declare -A networks=(
               ["goerli"]="$GOERLI_RPC_URL $ETHERSCAN_API_KEY"
@@ -77,8 +80,13 @@ jobs:
           )
 
           for networkName in "${!networks[@]}"; do
+              # creates variables rpc_url and etherscan_api_key from the value of the array
               read rpc_url etherscan_api_key <<<"${networks[$networkName]}"
-              if [ "$badges_code_at_last_tag" != "$current_badges_code" ]; then
+
+              # initialization of deployment flag
+              deploymentFlag=false
+
+              if [ "$badges_code_at_prev_tag" != "$latest_badges_code" ]; then
                   badgesImplementation=$(forge create src/Badges.sol:Badges --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
                       echo "Failed to deploy the new Badges implementation on $networkName"
                       exit 1
@@ -88,31 +96,42 @@ jobs:
                       echo "Failed to create a proposal for the new Badges implementation on $networkName"
                       exit 1
                   }
+                  # If the code execution reaches here, the deployment was successful
+                  deploymentFlag=true
               fi
 
-              if [ "$raft_code_at_last_tag" != "$current_raft_code" ]; then
+              if [ "$raft_code_at_prev_tag" != "$latest_raft_code" ]; then
                   raftImplementation=$(forge create src/Raft.sol:Raft --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
                       echo "Failed to deploy the new Raft implementation on $networkName"
                       exit 1
                   }
-                  echo "raftImplementation = $raftImplementation"                  
+                  echo "raftImplementation = $raftImplementation"
                   node scripts/createProposal.js "$raftImplementation" 'raft' "$networkName" || {
                       echo "Failed to create a proposal for the new Raft implementation on $networkName"
                       exit 1
                   }
+                  # If the code execution reaches here, the deployment was successful
+                  deploymentFlag=true
               fi
 
-              if [ "$sdh_code_at_last_tag" != "$current_sdh_code" ]; then
+              if [ "$sdh_code_at_prev_tag" != "$latest_sdh_code" ]; then
                   sdhImplementation=$(forge create src/SpecDataHolder.sol:SpecDataHolder --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
                       echo "Failed to deploy the new SpecDataHolder implementation on $networkName"
                       exit 1
                   }
-                  echo "sdhImplementation = $sdhImplementation"                  
+                  echo "sdhImplementation = $sdhImplementation"
                   node scripts/createProposal.js "$sdhImplementation" 'specDataHolder' "$networkName" || {
                       echo "Failed to create a proposal for the new SpecDataHolder implementation on $networkName"
                       exit 1
                   }
+                  # If the code execution reaches here, the deployment was successful
+                  deploymentFlag=true
               fi
 
-              echo "All implementations deployed successfully on $networkName"
+              # Check the deployment flag at the end of the loop
+              if [ "$deploymentFlag" = true ]; then
+                  echo "All implementations deployed successfully on $networkName"
+              else
+                  echo "No implementations deployed on $networkName"
+              fi
           done
