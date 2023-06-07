@@ -73,9 +73,7 @@ jobs:
           latest_sdh_code=$(cat src/SpecDataHolder.sol)
 
           declare -A networks=(
-              ["goerli"]="$GOERLI_RPC_URL $ETHERSCAN_API_KEY"
-              ["optimism-goerli"]="$OPTIMISM_GOERLI_RPC_URL $OPTIMISTIC_ETHERSCAN_API_KEY"
-              ["sepolia"]="$SEPOLIA_RPC_URL $ETHERSCAN_API_KEY"                  
+              ["goerli"]="$GOERLI_RPC_URL $ETHERSCAN_API_KEY"               
           )
 
           for networkName in "${!networks[@]}"; do
