@@ -89,7 +89,7 @@ jobs:
                       echo "Failed to deploy the new Badges implementation on $networkName"
                       exit 1
                   }
-                  echo "implementationAddress = $implementationAddress"
+                  echo "Badges contract deployed. implementationAddress: $implementationAddress"
                   node scripts/createProposal.js "$implementationAddress" 'badges' "$networkName" || {
                       echo "Failed to create a proposal for the new Badges implementation on $networkName"
                       exit 1
@@ -103,7 +103,7 @@ jobs:
                       echo "Failed to deploy the new Raft implementation on $networkName"
                       exit 1
                   }
-                  echo "implementationAddress = $implementationAddress"
+                  echo "Raft contract deployed. implementationAddress: $implementationAddress"
                   node scripts/createProposal.js "$implementationAddress" 'raft' "$networkName" || {
                       echo "Failed to create a proposal for the new Raft implementation on $networkName"
                       exit 1
@@ -117,7 +117,7 @@ jobs:
                       echo "Failed to deploy the new SpecDataHolder implementation on $networkName"
                       exit 1
                   }
-                  echo "implementationAddress = $implementationAddress"
+                  echo "SDH contract deployed. implementationAddress: $implementationAddress"
                   node scripts/createProposal.js "$implementationAddress" 'specDataHolder' "$networkName" || {
                       echo "Failed to create a proposal for the new SpecDataHolder implementation on $networkName"
                       exit 1

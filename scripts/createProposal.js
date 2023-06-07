@@ -145,6 +145,8 @@ async function createProposal() {
       newImplementation: implementationAddress,
     }
     
+    console.log("🚀 ~ createProposal ~ contract:", contract)
+    console.log("🚀 ~ createProposal ~ upgradeParams:", upgradeParams)
     await client.proposeUpgrade(upgradeParams, contract)
   } catch (error) {
     console.log('🚀 ~ createProposal ~ error:', error)
