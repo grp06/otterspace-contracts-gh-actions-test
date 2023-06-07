@@ -102,6 +102,10 @@ contract Badges is
     emit RefreshMetadata(_specUris, msg.sender);
   }
 
+  function testGeorge() external pure returns (string memory) {
+    return "George";
+  }
+
   /**
    * @notice Allows the Badges contract to communicate with the SpecDataHolder contract
    * @param _dataHolder address of the SpecDataHolder contract
