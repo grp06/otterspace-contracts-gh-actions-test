@@ -51,85 +51,80 @@ jobs:
 
       - name: Deploy
         run: |
-          set -e
+           set -e
 
-          # Get the name of the previous tag
-          prev_tag=$(git describe --tags --abbrev=0)
+           prev_tag=$(git describe --tags --abbrev=0)
           
-          echo "PREVIOUS TAG = $prev_tag"
-          # Create a new branch from the previous tag
-          git branch prev_tag $prev_tag
-          git switch prev_tag
+           echo "PREVIOUS TAG = $prev_tag"
+           git branch prev_tag $prev_tag
+           git switch prev_tag
 
-          # Get the code of the contracts at the previous tag
-          # and store it in a variable (it's just the file's content as a string)
-          badges_code_at_prev_tag=$(cat src/Badges.sol)
-          raft_code_at_prev_tag=$(cat src/Raft.sol)
-          sdh_code_at_prev_tag=$(cat src/SpecDataHolder.sol)
+           badges_code_at_prev_tag=$(cat src/Badges.sol)
+           raft_code_at_prev_tag=$(cat src/Raft.sol)
+           sdh_code_at_prev_tag=$(cat src/SpecDataHolder.sol)
 
-          git switch dev
+           git switch dev
 
-          latest_badges_code=$(cat src/Badges.sol)
-          latest_raft_code=$(cat src/Raft.sol)
-          latest_sdh_code=$(cat src/SpecDataHolder.sol)
+           latest_badges_code=$(cat src/Badges.sol)
+           latest_raft_code=$(cat src/Raft.sol)
+           latest_sdh_code=$(cat src/SpecDataHolder.sol)
 
-          declare -A networks=(
-              ["goerli"]="$GOERLI_RPC_URL $ETHERSCAN_API_KEY"               
-          )
+           declare -A networks=(
+               ["goerli"]="$GOERLI_RPC_URL $ETHERSCAN_API_KEY"
+           )
 
-          for networkName in "${!networks[@]}"; do
-              # creates variables rpc_url and etherscan_api_key from the value of the array
-              read rpc_url etherscan_api_key <<<"${networks[$networkName]}"
+           for networkName in "${!networks[@]}"; do
+               read rpc_url etherscan_api_key <<<"${networks[$networkName]}"
+               
+               # Initialize the list of successfully deployed contracts
+               deployedContracts=()
 
-              # initialization of deployment flag
-              deploymentFlag=false
+               if [ "$badges_code_at_prev_tag" != "$latest_badges_code" ]; then
+                   implementationAddress=$(forge create src/Badges.sol:Badges --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
+                       echo "Failed to deploy the new Badges implementation on $networkName"
+                       exit 1
+                   }
+                   echo "Badges contract deployed. implementationAddress: $implementationAddress"
+                   node scripts/createProposal.js "$implementationAddress" 'badges' "$networkName" || {
+                       echo "Failed to create a proposal for the new Badges implementation on $networkName"
+                       exit 1
+                   }
+                   # Add the contract name to the deployedContracts list
+                   deployedContracts+=("Badges")
+               fi
 
-              if [ "$badges_code_at_prev_tag" != "$latest_badges_code" ]; then
-                  implementationAddress=$(forge create src/Badges.sol:Badges --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
-                      echo "Failed to deploy the new Badges implementation on $networkName"
-                      exit 1
-                  }
-                  echo "Badges contract deployed. implementationAddress: $implementationAddress"
-                  node scripts/createProposal.js "$implementationAddress" 'badges' "$networkName" || {
-                      echo "Failed to create a proposal for the new Badges implementation on $networkName"
-                      exit 1
-                  }
-                  # If the code execution reaches here, the deployment was successful
-                  deploymentFlag=true
-              fi
+               if [ "$raft_code_at_prev_tag" != "$latest_raft_code" ]; then
+                   implementationAddress=$(forge create src/Raft.sol:Raft --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
+                       echo "Failed to deploy the new Raft implementation on $networkName"
+                       exit 1
+                   }
+                   echo "Raft contract deployed. implementationAddress: $implementationAddress"
+                   node scripts/createProposal.js "$implementationAddress" 'raft' "$networkName" || {
+                       echo "Failed to create a proposal for the new Raft implementation on $networkName"
+                       exit 1
+                   }
+                   # Add the contract name to the deployedContracts list
+                   deployedContracts+=("Raft")
+               fi
 
-              if [ "$raft_code_at_prev_tag" != "$latest_raft_code" ]; then
-                  implementationAddress=$(forge create src/Raft.sol:Raft --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
-                      echo "Failed to deploy the new Raft implementation on $networkName"
-                      exit 1
-                  }
-                  echo "Raft contract deployed. implementationAddress: $implementationAddress"
-                  node scripts/createProposal.js "$implementationAddress" 'raft' "$networkName" || {
-                      echo "Failed to create a proposal for the new Raft implementation on $networkName"
-                      exit 1
-                  }
-                  # If the code execution reaches here, the deployment was successful
-                  deploymentFlag=true
-              fi
+               if [ "$sdh_code_at_prev_tag" != "$latest_sdh_code" ]; then
+                   implementationAddress=$(forge create src/SpecDataHolder.sol:SpecDataHolder --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
+                       echo "Failed to deploy the new SpecDataHolder implementation on $networkName"
+                       exit 1
+                   }
+                   echo "SDH contract deployed. implementationAddress: $implementationAddress"
+                   node scripts/createProposal.js "$implementationAddress" 'specDataHolder' "$networkName" || {
+                       echo "Failed to create a proposal for the new SpecDataHolder implementation on $networkName"
+                       exit 1
+                   }
+                   # Add the contract name to the deployedContracts list
+                   deployedContracts+=("SpecDataHolder")
+               fi
 
-              if [ "$sdh_code_at_prev_tag" != "$latest_sdh_code" ]; then
-                  implementationAddress=$(forge create src/SpecDataHolder.sol:SpecDataHolder --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
-                      echo "Failed to deploy the new SpecDataHolder implementation on $networkName"
-                      exit 1
-                  }
-                  echo "SDH contract deployed. implementationAddress: $implementationAddress"
-                  node scripts/createProposal.js "$implementationAddress" 'specDataHolder' "$networkName" || {
-                      echo "Failed to create a proposal for the new SpecDataHolder implementation on $networkName"
-                      exit 1
-                  }
-                  # If the code execution reaches here, the deployment was successful
-                  deploymentFlag=true
-              fi
-
-              # Check the deployment flag at the end of the loop
-              if [ "$deploymentFlag" = true ]; then
-                  echo "All implementations deployed successfully on $networkName"
-              else
-                  echo "No implementations deployed on $networkName"
-              fi
-          done
+               # Check the deployment at the end of the loop
+               if [ ${#deployedContracts[@]} -gt 0 ]; then
+                   echo "Successfully deployed: ${#deployedContracts[@]} contract(s) (${deployedContracts[*]}) on $networkName"
+               else
+                   echo "No implementations deployed on $networkName"
+               fi
+           done
