@@ -30,16 +30,17 @@ async function createProposal() {
       apiKey: DEFENDER_TEAM_API_KEY,
       apiSecret: DEFENDER_TEAM_API_SECRET_KEY,
     })
-    const newImplementation = process.argv[2]
     console.log('🚀 ~ createProposal ~ process.argv[0]', process.argv[0])
     console.log('🚀 ~ createProposal ~ process.argv[1]', process.argv[1])
     console.log('🚀 ~ createProposal ~ process.argv[2]', process.argv[2])
     console.log('🚀 ~ createProposal ~ process.argv[3]', process.argv[3])
     console.log('🚀 ~ createProposal ~ process.argv[4]', process.argv[4])
     const contract = {}
+    const implementationAddress = process.argv[2]
     const contractName = process.argv[3]
     const network = process.argv[4]
 
+    contract.name = contractName
     switch (contractName) {
       case 'badges':
         if (network === 'goerli') {
@@ -136,8 +137,15 @@ async function createProposal() {
       default:
         throw new Error('Invalid network')
     }
-
-    await client.proposeUpgrade({ newImplementation, via, viaType }, contract)
+    const upgradeParams = {
+      title: `Upgrade ${contractName} to ${implementationAddress}`,
+      description: `proposed automatically from github action`,
+      via,
+      viaType,
+      newImplementation: implementationAddress,
+    }
+    
+    await client.proposeUpgrade(upgradeParams, contract)
   } catch (error) {
     console.log('🚀 ~ createProposal ~ error:', error)
   }

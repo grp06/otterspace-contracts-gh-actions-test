@@ -85,12 +85,12 @@ jobs:
               deploymentFlag=false
 
               if [ "$badges_code_at_prev_tag" != "$latest_badges_code" ]; then
-                  badgesImplementation=$(forge create src/Badges.sol:Badges --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
+                  implementationAddress=$(forge create src/Badges.sol:Badges --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
                       echo "Failed to deploy the new Badges implementation on $networkName"
                       exit 1
                   }
-                  echo "badgesImplementation = $badgesImplementation"
-                  node scripts/createProposal.js "$badgesImplementation" 'badges' "$networkName" || {
+                  echo "implementationAddress = $implementationAddress"
+                  node scripts/createProposal.js "$implementationAddress" 'badges' "$networkName" || {
                       echo "Failed to create a proposal for the new Badges implementation on $networkName"
                       exit 1
                   }
@@ -99,12 +99,12 @@ jobs:
               fi
 
               if [ "$raft_code_at_prev_tag" != "$latest_raft_code" ]; then
-                  raftImplementation=$(forge create src/Raft.sol:Raft --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
+                  implementationAddress=$(forge create src/Raft.sol:Raft --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
                       echo "Failed to deploy the new Raft implementation on $networkName"
                       exit 1
                   }
-                  echo "raftImplementation = $raftImplementation"
-                  node scripts/createProposal.js "$raftImplementation" 'raft' "$networkName" || {
+                  echo "implementationAddress = $implementationAddress"
+                  node scripts/createProposal.js "$implementationAddress" 'raft' "$networkName" || {
                       echo "Failed to create a proposal for the new Raft implementation on $networkName"
                       exit 1
                   }
@@ -113,12 +113,12 @@ jobs:
               fi
 
               if [ "$sdh_code_at_prev_tag" != "$latest_sdh_code" ]; then
-                  sdhImplementation=$(forge create src/SpecDataHolder.sol:SpecDataHolder --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
+                  implementationAddress=$(forge create src/SpecDataHolder.sol:SpecDataHolder --private-key "$DEPLOYER_PRIVATE_KEY" --verify --rpc-url "$rpc_url" --etherscan-api-key "$etherscan_api_key" | grep "Deployed to:" | cut -d " " -f 3) || {
                       echo "Failed to deploy the new SpecDataHolder implementation on $networkName"
                       exit 1
                   }
-                  echo "sdhImplementation = $sdhImplementation"
-                  node scripts/createProposal.js "$sdhImplementation" 'specDataHolder' "$networkName" || {
+                  echo "implementationAddress = $implementationAddress"
+                  node scripts/createProposal.js "$implementationAddress" 'specDataHolder' "$networkName" || {
                       echo "Failed to create a proposal for the new SpecDataHolder implementation on $networkName"
                       exit 1
                   }

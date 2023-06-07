@@ -103,7 +103,7 @@ contract Badges is
   }
 
   function testGeorge() external pure returns (string memory) {
-    return "George1";
+    return "George2.8.3";
   }
 
   /**
